@@ -1,0 +1,40 @@
+{
+  "name": "squeekchain-analytics",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent, source-verified Squeekchain analytics on Ethereum Sepolia.",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "check:sources": "tsx scripts/check-sources.ts",
+    "check:publication": "tsx scripts/check-publication.ts"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwindcss": "^4.1.0",
+    "@tailwindcss/postcss": "^4.1.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "lucide-react": "^0.468.0",
+    "recharts": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.0",
+    "tsx": "^4.20.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

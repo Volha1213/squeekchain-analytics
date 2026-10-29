@@ -1,0 +1,719 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/d0_response",
+  "$defs": {
+    "d2_installationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "d3_unavailableReason": {
+      "enum": [
+        "indexer_disabled",
+        "not_yet_safe",
+        "indexer_unavailable",
+        "indexer_mismatch",
+        "unsupported_contract_version",
+        "projection_rebuilding"
+      ]
+    },
+    "d5_versionId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "d6_revisionId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{2,63}$"
+    },
+    "d4_release": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/d5_versionId"
+        },
+        "protocolRevision": {
+          "$ref": "#/$defs/d6_revisionId"
+        },
+        "rewardModelRevision": {
+          "$ref": "#/$defs/d6_revisionId"
+        }
+      },
+      "required": [
+        "id",
+        "protocolRevision",
+        "rewardModelRevision"
+      ],
+      "additionalProperties": false
+    },
+    "d1_unavailable": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 2
+        },
+        "installationId": {
+          "$ref": "#/$defs/d2_installationId"
+        },
+        "status": {
+          "const": "unavailable"
+        },
+        "reason": {
+          "$ref": "#/$defs/d3_unavailableReason"
+        },
+        "release": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d4_release"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "installationId",
+        "status",
+        "reason",
+        "release"
+      ],
+      "additionalProperties": false
+    },
+    "d8_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "d10_decimal": {
+      "type": "string",
+      "format": "uint256-decimal"
+    },
+    "d11_bytes32": {
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{64}$"
+    },
+    "d9_chain": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "enum": [
+            "anvil",
+            "sepolia",
+            "mainnet"
+          ]
+        },
+        "chainId": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "confirmations": {
+          "const": "12"
+        },
+        "deploymentBlock": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "economyDeploymentBlock": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "indexedThroughBlock": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "safeThroughBlock": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "safeBlockHash": {
+          "$ref": "#/$defs/d11_bytes32"
+        },
+        "safeBlockTimestamp": {
+          "$ref": "#/$defs/d8_timestamp"
+        }
+      },
+      "required": [
+        "target",
+        "chainId",
+        "confirmations",
+        "deploymentBlock",
+        "economyDeploymentBlock",
+        "indexedThroughBlock",
+        "safeThroughBlock",
+        "safeBlockHash",
+        "safeBlockTimestamp"
+      ],
+      "additionalProperties": false
+    },
+    "d13_address": {
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{40}$"
+    },
+    "d14_proxyIdentity": {
+      "type": "object",
+      "properties": {
+        "proxy": {
+          "$ref": "#/$defs/d13_address"
+        },
+        "implementation": {
+          "$ref": "#/$defs/d13_address"
+        },
+        "implementationVersion": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "storageLayoutDigest": {
+          "$ref": "#/$defs/d11_bytes32"
+        }
+      },
+      "required": [
+        "proxy",
+        "implementation",
+        "implementationVersion",
+        "storageLayoutDigest"
+      ],
+      "additionalProperties": false
+    },
+    "d12_identities": {
+      "type": "object",
+      "properties": {
+        "core": {
+          "$ref": "#/$defs/d13_address"
+        },
+        "tokenFactory": {
+          "$ref": "#/$defs/d13_address"
+        },
+        "token": {
+          "$ref": "#/$defs/d13_address"
+        },
+        "genesis": {
+          "$ref": "#/$defs/d13_address"
+        },
+        "mining": {
+          "$ref": "#/$defs/d14_proxyIdentity"
+        },
+        "staking": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d14_proxyIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "launch": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d13_address"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "core",
+        "tokenFactory",
+        "token",
+        "genesis",
+        "mining",
+        "staking",
+        "launch"
+      ],
+      "additionalProperties": false
+    },
+    "d15_asset": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "#/$defs/d13_address"
+        },
+        "symbol": {
+          "const": "SQK"
+        },
+        "decimals": {
+          "const": 18
+        }
+      },
+      "required": [
+        "address",
+        "symbol",
+        "decimals"
+      ],
+      "additionalProperties": false
+    },
+    "d16_lifecycle": {
+      "type": "object",
+      "properties": {
+        "stage": {
+          "enum": [
+            "bootstrapped",
+            "staking_bound",
+            "scheduled",
+            "active"
+          ]
+        },
+        "startRound": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d10_decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currentRound": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "paused": {
+          "type": "boolean"
+        },
+        "guardian": {
+          "$ref": "#/$defs/d13_address"
+        }
+      },
+      "required": [
+        "stage",
+        "startRound",
+        "currentRound",
+        "paused",
+        "guardian"
+      ],
+      "additionalProperties": false
+    },
+    "d17_supply": {
+      "type": "object",
+      "properties": {
+        "capBaseUnits": {
+          "const": "2100000000000000000000000000"
+        },
+        "premintBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "miningMintedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "totalMintedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "totalBurnedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "liveSupplyBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "unmintedCapacityBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        }
+      },
+      "required": [
+        "capBaseUnits",
+        "premintBaseUnits",
+        "miningMintedBaseUnits",
+        "totalMintedBaseUnits",
+        "totalBurnedBaseUnits",
+        "liveSupplyBaseUnits",
+        "unmintedCapacityBaseUnits"
+      ],
+      "additionalProperties": false
+    },
+    "d18_schedule": {
+      "type": "object",
+      "properties": {
+        "allowanceBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "launchBonusBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "bonusBlocks": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "halvingBlocks": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "firstPeriodRateBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "startHeight": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d10_decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closedThroughBlock": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "issuedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        }
+      },
+      "required": [
+        "allowanceBaseUnits",
+        "launchBonusBaseUnits",
+        "bonusBlocks",
+        "halvingBlocks",
+        "firstPeriodRateBaseUnits",
+        "startHeight",
+        "closedThroughBlock",
+        "issuedBaseUnits"
+      ],
+      "additionalProperties": false
+    },
+    "d20_curve": {
+      "type": "object",
+      "properties": {
+        "floorBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "targetPower": {
+          "$ref": "#/$defs/d10_decimal"
+        }
+      },
+      "required": [
+        "floorBps",
+        "targetPower"
+      ],
+      "additionalProperties": false
+    },
+    "d21_pendingCurve": {
+      "type": "object",
+      "properties": {
+        "floorBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "targetPower": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "effectiveRound": {
+          "$ref": "#/$defs/d10_decimal"
+        }
+      },
+      "required": [
+        "floorBps",
+        "targetPower",
+        "effectiveRound"
+      ],
+      "additionalProperties": false
+    },
+    "d19_mining": {
+      "type": "object",
+      "properties": {
+        "processedThroughRound": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "fundedBlocks": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "gachaFundedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "stakingFundedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "gachaVault": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d13_address"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "curve": {
+          "$ref": "#/$defs/d20_curve"
+        },
+        "pendingCurve": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d21_pendingCurve"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "processedThroughRound",
+        "fundedBlocks",
+        "gachaFundedBaseUnits",
+        "stakingFundedBaseUnits",
+        "gachaVault",
+        "curve",
+        "pendingCurve"
+      ],
+      "additionalProperties": false
+    },
+    "d23_exitPolicy": {
+      "type": "object",
+      "properties": {
+        "minBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "maxBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "saturationBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "windowDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 255
+        },
+        "pressureFloorBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        }
+      },
+      "required": [
+        "minBps",
+        "maxBps",
+        "saturationBps",
+        "windowDays",
+        "pressureFloorBaseUnits"
+      ],
+      "additionalProperties": false
+    },
+    "d24_stakingRewards": {
+      "type": "object",
+      "properties": {
+        "fundedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "paidBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "compoundedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "remainingBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "rewardIndex": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "streamRateBaseUnitsPerSecond": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "streamEndsAt": {
+          "$ref": "#/$defs/d10_decimal"
+        }
+      },
+      "required": [
+        "fundedBaseUnits",
+        "paidBaseUnits",
+        "compoundedBaseUnits",
+        "remainingBaseUnits",
+        "rewardIndex",
+        "streamRateBaseUnitsPerSecond",
+        "streamEndsAt"
+      ],
+      "additionalProperties": false
+    },
+    "d22_staking": {
+      "type": "object",
+      "properties": {
+        "totalStakedBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "freshPrincipalBaseUnits": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "freshUntilRound": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "sqkPerPower": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "referencePower": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "exitPolicy": {
+          "$ref": "#/$defs/d23_exitPolicy"
+        },
+        "paused": {
+          "type": "boolean"
+        },
+        "launchReady": {
+          "type": "boolean"
+        },
+        "totalNftPower": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "totalSqkPower": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "rewards": {
+          "$ref": "#/$defs/d24_stakingRewards"
+        }
+      },
+      "required": [
+        "totalStakedBaseUnits",
+        "freshPrincipalBaseUnits",
+        "freshUntilRound",
+        "sqkPerPower",
+        "referencePower",
+        "exitPolicy",
+        "paused",
+        "launchReady",
+        "totalNftPower",
+        "totalSqkPower",
+        "rewards"
+      ],
+      "additionalProperties": false
+    },
+    "d26_maximumLevel": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 10
+    },
+    "d25_nft": {
+      "type": "object",
+      "properties": {
+        "issued": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "burned": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "live": {
+          "$ref": "#/$defs/d10_decimal"
+        },
+        "maximumLevel": {
+          "$ref": "#/$defs/d26_maximumLevel"
+        },
+        "cooldownBlocks": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/d10_decimal"
+          }
+        },
+        "basePower": {
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 10,
+              "items": {
+                "$ref": "#/$defs/d10_decimal"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mergesOpen": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "issued",
+        "burned",
+        "live",
+        "maximumLevel",
+        "cooldownBlocks",
+        "basePower",
+        "mergesOpen"
+      ],
+      "additionalProperties": false
+    },
+    "d7_available": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 2
+        },
+        "status": {
+          "const": "available"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/d8_timestamp"
+        },
+        "release": {
+          "$ref": "#/$defs/d4_release"
+        },
+        "chain": {
+          "$ref": "#/$defs/d9_chain"
+        },
+        "identities": {
+          "$ref": "#/$defs/d12_identities"
+        },
+        "asset": {
+          "$ref": "#/$defs/d15_asset"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/d16_lifecycle"
+        },
+        "supply": {
+          "$ref": "#/$defs/d17_supply"
+        },
+        "schedule": {
+          "$ref": "#/$defs/d18_schedule"
+        },
+        "mining": {
+          "$ref": "#/$defs/d19_mining"
+        },
+        "staking": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/d22_staking"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nft": {
+          "$ref": "#/$defs/d25_nft"
+        },
+        "installationId": {
+          "$ref": "#/$defs/d2_installationId"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "status",
+        "generatedAt",
+        "release",
+        "chain",
+        "identities",
+        "asset",
+        "lifecycle",
+        "supply",
+        "schedule",
+        "mining",
+        "staking",
+        "nft",
+        "installationId"
+      ],
+      "additionalProperties": false
+    },
+    "d0_response": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/d1_unavailable"
+        },
+        {
+          "$ref": "#/$defs/d7_available"
+        }
+      ]
+    }
+  },
+  "$comment": "Public response structure from source snapshot 2454d346d25e5b9dc48af7e547ce1038b6fdb5cc. See endpoint notes for semantic constraints."
+}

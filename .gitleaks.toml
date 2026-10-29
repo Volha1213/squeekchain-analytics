@@ -1,0 +1,14 @@
+# The real, public API snapshots contain ERC-20 contract addresses in fields
+# named "token" and "tokenFactory". These are public Ethereum addresses,
+# not authentication tokens. Verified against the live API on 2026-10-29:
+# https://api.squeekchain.com/v1/economy/state
+# https://api.squeekchain.com/v1/settlements?range=7d
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exact public contract addresses in recorded API regression fixtures"
+condition = "AND"
+regexTarget = "line"
+paths = ['''^tests/fixtures/(economy|settlements)\.json$''']
+regexes = ['''"token(Factory)?":\s*"0x(779a302adbaa9c8a3da45ef48ad67e6a45fcef29|5501e1fa81be1c3f49225fa7668da0245d07db60)"''']

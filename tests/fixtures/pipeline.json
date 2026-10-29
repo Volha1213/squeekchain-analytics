@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "installationId": "stream-game-sepolia-test-20261025-01",
+  "revision": "nQ12X2meGyux-gOqnkbOvB_cbIoe1sMjerZb7Iqt2RQ",
+  "generatedAt": "2026-10-29T19:45:47.918Z",
+  "measurement": {
+    "freshness": "online",
+    "observedAt": "2026-10-29T19:45:46.179Z",
+    "receivedAt": "2026-10-29T19:45:46.498Z",
+    "staleAfterSeconds": 120,
+    "counterEpoch": "c011f01a-93ba-45ff-8579-619ddfdf40ec",
+    "cumulativeWorkUnits": "32660",
+    "provenance": "hardware",
+    "coreStatus": "IDLE",
+    "rpmMilli": 0,
+    "speedMmPerSecond": 0,
+    "distanceMm": 0
+  },
+  "builder": {
+    "status": "available",
+    "anchor": {
+      "cumulativeWork": "32660",
+      "cumulativeBlockUnits": "2994347019284",
+      "blockHeight": "2994",
+      "blockProgress": "347019284",
+      "workPerThousandBlocks": "11246",
+      "settledThroughRound": "467",
+      "confirmedAt": "2026-10-29T19:40:48.000Z",
+      "transactionHash": "0xd366b544a0e9dcc2bdeb16a0d35eb208d7ac0d30863ab23bfc62e11d9a524e53"
+    },
+    "queued": {
+      "closedRoundCount": "0",
+      "closedWorkUnits": "0",
+      "openRoundWorkUnits": "0"
+    },
+    "projected": {
+      "cumulativeWork": "32660",
+      "cumulativeBlockUnits": "2994347019284",
+      "blockHeight": "2994",
+      "blockProgress": "347019284",
+      "workPerThousandBlocks": "11246",
+      "firstCompletedBlock": null,
+      "lastCompletedBlock": null,
+      "completedBlockCount": "0",
+      "lifecycle": "optimistic"
+    }
+  },
+  "oracle": {
+    "state": "accepted",
+    "reason": null,
+    "latestAcceptedAt": "2026-10-29T19:45:46.498Z",
+    "latestClosure": {
+      "firstRound": "467",
+      "lastRound": "467",
+      "roundCount": "1",
+      "acceptedAt": "2026-10-29T19:40:06.760Z"
+    }
+  },
+  "settlementQueue": {
+    "status": "available",
+    "state": "empty",
+    "settlementEnabled": true,
+    "reporterEnvironmentEnabled": true,
+    "buffered": {
+      "firstRound": null,
+      "lastRound": null,
+      "roundCount": "0",
+      "activeRoundCount": "0",
+      "workUnits": "0"
+    },
+    "projected": {
+      "cumulativeWork": "32660",
+      "cumulativeBlockUnits": "2994347019284",
+      "blockHeight": "2994",
+      "blockProgress": "347019284",
+      "workPerThousandBlocks": "11246",
+      "firstCompletedBlock": null,
+      "lastCompletedBlock": null,
+      "completedBlockCount": "0",
+      "lifecycle": "optimistic"
+    },
+    "incidentOpen": false,
+    "blockedReason": null,
+    "lastRun": {
+      "startedAt": "2026-10-29T19:45:27.377Z",
+      "finishedAt": "2026-10-29T19:45:29.675Z",
+      "result": "reconciled"
+    },
+    "latestSubmission": {
+      "submissionId": "e6ef5c65-df91-41b5-8a87-a00c5b1a561c",
+      "lifecycle": "confirmed",
+      "previousSettledThroughRound": "466",
+      "settledThroughRound": "467",
+      "roundCount": "1",
+      "activeRoundCount": "0",
+      "expected": {
+        "cumulativeWork": "32660",
+        "cumulativeBlockUnits": "2994347019284",
+        "blockHeight": "2994",
+        "blockProgress": "347019284",
+        "workPerThousandBlocks": "11246",
+        "firstCompletedBlock": null,
+        "lastCompletedBlock": null,
+        "completedBlockCount": "0"
+      },
+      "transactionHash": "0xd366b544a0e9dcc2bdeb16a0d35eb208d7ac0d30863ab23bfc62e11d9a524e53",
+      "createdAt": "2026-10-29T19:40:28.747Z",
+      "submittedAt": "2026-10-29T19:40:28.747Z",
+      "confirmedAt": "2026-10-29T19:45:28.927Z",
+      "terminalAt": "2026-10-29T19:45:28.927Z",
+      "changedAt": "2026-10-29T19:45:28.927Z",
+      "outcomeCode": null
+    }
+  },
+  "signer": {
+    "kind": "trust-m",
+    "algorithm": "ecdsa-p256-sha256",
+    "keySlot": "0xE0F3",
+    "enrolledAt": "2026-10-26T16:03:26.750Z",
+    "lastVerifiedAt": "2026-10-29T19:45:46.498Z",
+    "lastSignature": "jPZcBKD99bGx7N+Eg/5Hs8oMc365dk9meN5Lf4yC4J9a898n2UZjrXyCDgDPditd+8jxIrZcRJR5UCW/DFh3Hg=="
+  },
+  "modules": [
+    {
+      "instanceId": "wheel",
+      "moduleType": "wheel.counter",
+      "driverId": "usb-rp2040-a3144e-lm393",
+      "moduleVersion": "0.2.1",
+      "schemaVersion": 1,
+      "state": "ready",
+      "observedAt": "2026-10-29T19:45:46.179538Z",
+      "provenance": "hardware",
+      "health": {
+        "checkedAt": "2026-10-29T19:45:46.179538Z"
+      },
+      "data": {}
+    }
+  ]
+}
