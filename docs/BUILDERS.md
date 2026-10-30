@@ -1,3 +1,5 @@
+> Static edition note: this is historical badge research for the original analytics app. The local Wheel Arcade is now implemented; it is not a verified contract integration or evidence of badge acceptance.
+
 # Builder eligibility and submission research
 
 Checked on 2026-10-29. This document separates publicly available badge rules from submission code shipped by the official website but not exposed as a working public submission route during this check.
@@ -46,4 +48,4 @@ The [SQK Rewards Assistant plan](REWARDS-ASSISTANT-PLAN.md) proposes live owners
 7. Submit the honest English description in [SUBMISSION.md](SUBMISSION.md), after replacing only fields backed by real publication evidence.
 8. Treat status as not submitted, not verified and not awarded until the portal or team supplies the corresponding confirmation.
 
-This application does not use IMD. Its code and publication cannot be attributed to an IMD paid job.
+This static edition repairs the existing [IMD job](https://explorer.imd.fun/jobs/d370b7e7-35b0-445d-8766-e690d0ad13a9). Its original accepted work and review are recorded there. This local repair has not been published or submitted as another IMD job. IMD evidence and Squeekchain project attribution are separate; no badge award is claimed.

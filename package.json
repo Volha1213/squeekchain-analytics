@@ -1,23 +1,23 @@
 {
-  "name": "squeekchain-analytics",
-  "version": "1.0.0",
+  "name": "squeekchain-analytics-ipfs",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "Independent, source-verified Squeekchain analytics on Ethereum Sepolia.",
+  "description": "Static community analytics and a clearly separate hamster rhythm game for IPFS.",
   "engines": {
     "node": "24.x"
   },
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0",
-    "build": "next build",
-    "start": "next start --hostname 0.0.0.0",
+    "dev": "vite --host 0.0.0.0",
+    "generate:validators": "tsx scripts/generate-validators.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts",
+    "build": "npm run generate:validators && npm run typecheck && vite build && node scripts/check-static.mjs",
+    "test": "npm run generate:validators && tsx --test tests/*.test.ts",
+    "preview": "node scripts/gateway-server.mjs",
     "check:sources": "tsx scripts/check-sources.ts",
-    "check:publication": "tsx scripts/check-publication.ts"
+    "pack:ipfs": "node scripts/package-static.mjs"
   },
   "dependencies": {
-    "next": "16.4.3",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "tailwindcss": "^4.1.0",
@@ -32,7 +32,8 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.9.0",
-    "tsx": "^4.20.0"
+    "tsx": "^4.20.0",
+    "vite": "8.3.5"
   },
   "allowScripts": {
     "esbuild@0.28.2": true

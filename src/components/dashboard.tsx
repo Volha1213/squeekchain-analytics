@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
@@ -15,6 +14,7 @@ import {
   ExternalLink,
   Fingerprint,
   Gauge,
+  Gamepad2,
   Heart,
   LayoutDashboard,
   Menu,
@@ -31,6 +31,7 @@ import {
 import { AnalyticsChart } from "./chart";
 import { buildPoints, type Metric } from "@/lib/chart-data";
 import { HamsterWheel } from "./hamster-wheel";
+import { WheelGame } from "./wheel-game";
 import { useAnalytics } from "./use-analytics";
 import {
   compactToken,
@@ -43,15 +44,17 @@ import {
 } from "@/lib/format";
 import type { Analytics, Range, SourceResult, Stats } from "@/lib/types";
 
-type View = "overview" | "wheel" | "blocks" | "sqk" | "sources";
+type View = "overview" | "wheel" | "blocks" | "sqk" | "sources" | "game";
 const navigation: { id: View; title: string; icon: typeof Activity }[] = [
   { id: "overview", title: "Overview", icon: LayoutDashboard },
   { id: "wheel", title: "Wheel activity", icon: Activity },
   { id: "blocks", title: "Blocks", icon: Box },
   { id: "sqk", title: "SQK economy", icon: Coins },
+  { id: "game", title: "Wheel arcade", icon: Gamepad2 },
   { id: "sources", title: "Data sources", icon: Database },
 ];
 const titles: Record<View, [string, string]> = {
+  game: ["Your turn at the wheel.", "A tiny rhythm game. Fictional points. Real good fun."],
   overview: [
     "Small paws. Real work.",
     "A closer look at the world's hamster-powered blockchain.",
@@ -175,11 +178,9 @@ export function Dashboard() {
   const [now, setNow] = useState(() => Date.now());
   const { data, loading, error, refresh } = useAnalytics(range, auto);
   useEffect(() => {
-    setLight(localStorage.getItem("squeek-theme") === "light");
-  }, []);
-  useEffect(() => {
     document.documentElement.dataset.theme = light ? "light" : "dark";
-    localStorage.setItem("squeek-theme", light ? "light" : "dark");
+    // No browser storage: shared path gateways and restricted/sandboxed
+    // browsers must be able to render without a Storage API permission.
   }, [light]);
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -441,6 +442,8 @@ export function Dashboard() {
               <ArrowUpRight size={13} />
             </button>
           </div>
+          <p className="community-note">Independent community project. Not affiliated with or endorsed by Squeekchain. Game points are fictional and are never SQK or onchain activity.</p>
+          {view === "overview" && <div className="arcade-invite"><div><strong>Little paws. Your high score.</strong><p>Try the 30-second Wheel Arcade. Local game points only.</p></div><button onClick={() => navigate("game")}><Gamepad2 size={17}/>Play the mini-game<ArrowRight size={14}/></button></div>}
           {error && (
             <div className="notice error-notice" role="alert">
               {error}
@@ -484,7 +487,7 @@ export function Dashboard() {
             </div>
           )}
 
-          {view !== "sources" && (
+          {view !== "sources" && view !== "game" && (
             <>
               <section className="metrics-grid" aria-label="Network metrics">
                 <MetricCard
@@ -1039,6 +1042,7 @@ export function Dashboard() {
             </>
           )}
           {view === "sources" && <Sources data={data} loading={loading} />}
+          {view === "game" && <WheelGame />}
           <footer className="page-footer">
             <div>
               <Logo small />

@@ -1,9 +1,5 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Static IPFS edition
 
-## This is NOT the Next.js you know
+This branch is a standalone React + Vite site. Do not restore Next.js server routes or absolute-root asset paths. Build with `npm run build`; publish only the contents of `dist/`. Keep `base: "./"`, build-time standalone schema validators and a CSP without `unsafe-eval`. The hamster game uses fictional local points only; never feed game state into API statistics or label it SQK.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+Test root and nested `/ipfs/CID/` paths in a real browser, including API failures, restrictive CSP, denied storage, touch and keyboard input. Never update `main`, the Vercel production project, Genesis or the paid IMD job automatically.

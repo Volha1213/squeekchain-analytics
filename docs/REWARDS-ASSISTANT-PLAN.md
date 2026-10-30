@@ -1,3 +1,5 @@
+> Historical, unimplemented proposal. The static IPFS edition ships a local fictional-points game, not this contract rewards assistant. No wallet or transaction feature is enabled.
+
 # SQK Rewards Assistant — implementation proposal
 
 Status: proposed on 2026-10-30. This feature is **not implemented or enabled**. The existing dashboard remains read-only. No claim or checkpoint has been sent by this application.

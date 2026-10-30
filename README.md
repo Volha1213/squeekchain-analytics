@@ -1,165 +1,65 @@
-# Squeekchain Analytics
+# Squeekchain Analytics — static IPFS edition
 
-**Small paws. Real work.** An independent analytics dashboard for the hamster-powered Squeekchain ecosystem on **Ethereum Sepolia**.
+An **independent community project**, not affiliated with or endorsed by Squeekchain. Real analytics and a clearly separate, just-for-fun hamster rhythm game.
 
-Public site: [squeekchain-analytics.vercel.app](https://squeekchain-analytics.vercel.app/). Public source: [Volha1213/squeekchain-analytics](https://github.com/Volha1213/squeekchain-analytics).
+Public static source: [ipfs-imd-static](https://github.com/Volha1213/squeekchain-analytics/tree/ipfs-imd-static). This edition is maintained in the isolated `squeekchain-analytics-ipfs` worktree. The Next.js application on `main` and its Vercel production site are unchanged. Do not merge this static branch into `main`.
 
-Built with **Next.js 16, TypeScript, Tailwind CSS 4, and Recharts**. No wallet, API key, database, or paid RPC provider is required.
+## What was repaired
 
-![Squeekchain Analytics dashboard](docs/screenshots/overview-dark.jpg)
+The existing [IMD job](https://explorer.imd.fun/jobs/d370b7e7-35b0-445d-8766-e690d0ad13a9) copied a Next.js server build into a static folder. Its root-absolute `/_next/` paths fail under a path gateway. The IMD domain also forbids `unsafe-eval`; AJV's runtime `Function(...)` schema compiler caused the actual `EvalError` behind the “little wheel jam” screen.
 
-*Real API data captured on 2026-10-29. The screenshot is documentation; runtime data is always fetched from the official API.*
+This version uses React + TypeScript + Vite, with `base: "./"`, bundled local assets, hash navigation and **build-time standalone schema validators**. It needs no Next.js server, API route, database, wallet, external font or environment secret. CSP permits scripts from the site itself and public API reads, without `unsafe-eval`. Browser storage is not used, so blocked storage cannot crash the theme or game. Static security policy is in the HTML; server-only Next.js security headers are not claimed.
 
-## Features
+## Run and build
 
-- Live WHEELY9000 telemetry: wheel RPM, running speed, sensor freshness, hardware provenance, and active/idle/fault states.
-- Settled Squeek block height, work, difficulty, settlement rounds, and next-block progress.
-- Latest block-completing settlement batches with real Sepolia transaction links.
-- Interactive block settlement rate, wheel work, and SQK issuance charts, with period selection, accessible table view, and CSV export.
-- Historical accepted wheel activity, distance, records, and observation coverage.
-- SQK live supply, lifetime supply cap, mining issuance, staking totals, and live Squeek counts.
-- Responsive mobile navigation, dark/light themes, reduced-motion support, and keyboard controls.
-- Automatic refresh every 15 seconds while visible, a pause switch, and manual refresh.
-- Source status, timestamps, cache provenance, schema validation, and deployment identity transparency.
-
-## Run locally
-
-Use **Node.js 24.x** and npm. The Node major version is pinned in `package.json` and `.nvmrc` to keep local, CI, and Vercel environments consistent.
+Use Node.js 24.x and npm:
 
 ```bash
 npm ci
-npm run dev
+npm test
+npm run build
+npm run preview
 ```
 
-Open http://localhost:3000. No environment configuration is required; `.env.example` documents this intentionally empty configuration.
-
-```bash
-npm test             # Data precision, real source fixtures, failure handling, cache behavior
-npm run typecheck    # Strict TypeScript checks
-npm run check:sources # Live official API checks; requires internet
-npm run build        # Production build, including TypeScript validation
-npm start            # Serve the production build
-```
-
-The production build does not require the upstream API to be online. Data is requested at runtime.
-
-## Real data, with explicit limits
-
-Source: [official API reference](https://docs.squeekchain.com/developers/api/).
-
-| Official endpoint | Used for | Per-client / per-instance cache |
-| --- | --- | --- |
-| `GET https://api.squeekchain.com/v1/status` | Device readings, freshness, optimistic projection | 5 seconds |
-| `GET https://api.squeekchain.com/v1/core` | Settled SqueekCore state | 15 seconds |
-| `GET https://api.squeekchain.com/v1/settlements?range=24h`, `7d`, or `30d` | Block batches, settlement rate, period issuance | 60 seconds |
-| `GET https://api.squeekchain.com/v1/economy/state` | SQK supply and staking | 15 seconds |
-| `GET https://api.squeekchain.com/v1/measurement/stats?range=7d` or `30d` | Historical activity and coverage | 5 minutes |
-
-The dashboard reads these fixed official URLs directly in the browser using the API's documented public CORS support, with `credentials: "omit"`. The shared reader applies the same schemas, ETags, cache intervals and availability rules in the browser and on the server. There is no proxy rotation, browser impersonation, challenge solving or fallback to sample data. Users' networks must be able to reach the official API; their IP reaches that service in the normal way.
-
-The optional same-origin `/api/analytics?range=7d` route also aggregates these URLs for server clients. **Vercel server access is currently challenged by Squeekchain's Cloudflare protection**, so that route reports source errors honestly; it is not the dashboard's data transport. Fixing this server access requires the API owner's authorized protection configuration. See [the diagnosis and provider handoff](docs/API-ACCESS.md).
-
-Ranges `24h`, `7d`, and `30d` are accepted; unknown or repeated query parameters on the server route return HTTP 400. Measurement statistics support only `7d`/`30d`; wheel activity therefore offers those two ranges.
-
-### Integrity rules
-
-- Official JSON Schemas are vendored in `src/lib/schemas/`, retrieved on 2026-10-29. AJV validates schema version, required fields, ranges, timestamp formats, and unsigned integer sizes. Unknown additive properties are accepted as specified by the API's versioning contract. Unknown breaking versions and invalid responses become explicit source errors.
-- HTTP 200 with `status: "unavailable"` is unavailable, never zero. Each source fails independently. A failed dashboard refresh retains the last snapshot with a visible stale-data message. Device readings become stale after the reported freshness threshold, including while refresh is paused.
-- ETags and 304 responses preserve the original data generation time. `Retry-After` is respected; transient errors back off for at least 15 seconds, generic 403 responses for at least 5 minutes. Explicit non-retryable denials and detected protection challenges stop polling that URL for the current reader lifetime. Requests are coalesced within a browser tab or server instance. Network requests time out after 8 seconds. No requests contain credentials or challenge cookies.
-- SQK is parsed as `BigInt`. Full amounts retain 18-decimal precision. Compact values truncate; chart values convert at the presentation boundary and are approximate. Integers exceeding safe chart precision become gaps.
-- Wheel work measures accepted magnet passages, not hashes, energy, or health. Historical distance and live device-day distance are different observations.
-- **Block rate means blocks settled per elapsed hour in an API bucket.** It is not the exact time between physical block completions. Current partial buckets use elapsed time through the source's `generatedAt`; future buckets are gaps.
-- Latest blocks are grouped by their real settlement transaction. Displayed timestamps are Ethereum settlement times, not individual block production times.
-- Missing wheel observations are gaps. Partial days display their coverage. Device days start at **12:00 UTC**, following the source contract.
-- A `durable-cache` settlement response is visibly marked as an upstream cached snapshot.
-- Market price, market cap, trading volume, TPS, validators, and exact individual block production times are not invented. Sepolia SQK is a testnet asset with no monetary value.
-- The hamster graphic is an original SVG illustration. It is labeled as an illustration; it is not a live camera feed. The wheel animates only when fresh telemetry reports an active wheel.
-
-### Deployment record discrepancy
-
-On **2026-10-29**, rechecked on **2026-10-30**, the current API reported a different Core and SQK deployment from the [published deployment record](https://docs.squeekchain.com/assets/deployments/sepolia.json):
-
-| Contract | Published record snapshot | Live API at research time |
-| --- | --- | --- |
-| SqueekCore | `0x74665dAecA35A2303e767E76a2FF1FB6F93e119f` | `0x980b4424c007caf7a1f3670b48c8eaef7ebc3d44` |
-| SQK | `0x6872bfa5ccc3e9e440c6c16e5ffdabb8dba4cc76` | `0x5501e1fa81be1c3f49225fa7668da0245d07db60` |
-| Mining proxy | `0x3beE588fC20dE788Bac17d33b41Da7346cb27EC4` | `0xcd46990f8349057335289ef282c276204b6cdc62` |
-| Mining implementation version | `6` | `9` |
-
-The application makes the Core/SQK discrepancy visible. The snapshot is stored with its source URL and retrieval date in `src/lib/deployment-record.json`; it is **not a dynamically refreshed deployment registry**. The app compares current Core/economy chain IDs and Core addresses for internal consistency, but this is **not independent RPC verification**. All figures remain explicitly API-reported. The API and record identify different releases; the documented version-6 Mining ABI cannot be assumed compatible with version 9. Refresh the snapshot only after reviewing an updated official deployment record.
-
-## RPC and SDK research
-
-Squeekchain is an application on Ethereum Sepolia (chain ID `11155111`), not a separate EVM network. The [official quickstart](https://docs.squeekchain.com/developers/quickstart/) uses **viem 2** and a user-supplied Sepolia RPC with historical reads. The [developer documentation](https://docs.squeekchain.com/developers/) publishes contract ABIs and deployment identities; it does not supply a dedicated runtime SDK. The [agent skill](https://docs.squeekchain.com/developers/build-with-ai/) is developer guidance, not an application SDK.
-
-This application uses the documented public API. It does not guess a Squeekchain RPC URL, use an unverified contract ABI, sign transactions, or imply it has verified contract identities onchain. An independently verified RPC integration would first need to resolve the deployment discrepancy and follow the official identity verification procedure.
-
-## Deploy to Vercel
-
-1. Push this standalone project to your GitHub repository using the instructions below.
-2. In [Vercel](https://vercel.com/new), import that repository.
-3. Select **Next.js**, set the root to the repository root, and choose **Node.js 24.x**. The checked-in `vercel.json` declares the framework and install/build commands.
-4. Keep the standard commands: install `npm ci`, build `npm run build`, and the default Next.js output directory. No environment variables are required.
-5. Deploy, then open the **Data sources** screen to confirm real browser reads, schema validation and current upstream availability. Separately inspect `/api/analytics?range=7d` for server-origin access; a protection challenge there does not mean browser access is allowed or denied. Validate both independently.
-
-Alternatively, from the project directory, run `npx vercel` and, once you have reviewed the preview, `npx vercel --prod`. These require your Vercel account and authentication.
-
-The route runs on the Node.js runtime with a 30-second maximum duration. Source calls run concurrently. Caches are in-memory and **per browser tab / server instance**; separate tabs, serverless instances and cold starts do not share request budgets. Upstream Cloudflare caching still applies. Multiple browser tabs on one network share the API's per-IP limits. The dashboard pauses polling while hidden and honors source backoff. Any future shared server cache needs authorized upstream access first. The application does not require persistent storage for normal use.
-
-## Publish to GitHub
-
-This folder is an independent Git repository on branch `main`. Build output, dependencies, local environment files, and Vercel state are ignored. CI checks tests and the production build.
-
-Create an empty GitHub repository named `squeekchain-analytics`, then run:
-
-```bash
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/squeekchain-analytics.git
-git push -u origin main
-```
-
-Replace `YOUR_GITHUB_USERNAME` with your actual account. If you make further changes before pushing:
-
-```bash
-git add .
-git commit -m "Update Squeekchain analytics"
-```
-
-No GitHub repository, owner identity, or deployed public URL is fabricated in this source tree.
-
-## Buildooooor / Early Buildooooor
-
-The official [Aura badge listing](https://squeekchain.com/genesis/aura) describes project submission with verified attribution as the Buildooooor requirement. Early Buildooooor depends on being among the first 88 members to verify a project. Building or deploying this code does not itself award either badge.
-
-See [the researched submission requirements](docs/BUILDERS.md), [authorship evidence](docs/AUTHORSHIP.md) and [English submission draft](docs/SUBMISSION.md). At the time of research, Genesis marked Code as not open yet. Bundled, currently inactive submission guidance describes DNS attribution and excludes read-only dashboards. This application is read-only; acceptance must be confirmed by the team. No badge eligibility or award is claimed.
-
-The [SQK Rewards Assistant proposal](docs/REWARDS-ASSISTANT-PLAN.md) describes a useful owner action with verified Sepolia contracts, reward simulations and individual wallet confirmations. It has not been implemented. Resolve deployment identities and validate the complete contract graph before enabling any write.
-
-## Structure
+`npm run build` generates validators, checks TypeScript, creates `dist/`, then checks asset paths and forbidden server/eval dependencies. `npm run preview` serves the actual output on port 4173 without SPA rewrites. Test these paths (the CID here is a **local routing fixture**, not a newly published CID):
 
 ```text
-src/app/                  Next.js layout, dashboard page, API route, themes
-src/components/           Interactive dashboard, chart, SVG illustration, polling hook
-src/lib/sources.ts        Fixed official source reads, validation, ETag/cache/backoff
-src/lib/validate.ts       Official JSON Schema validation
-src/lib/format.ts         Exact integer/token formatting and chart boundaries
-src/lib/schemas/          Upstream official JSON Schema snapshots
-src/lib/deployment-record.json  Dated official deployment record snapshot
-tests/                    Data integrity and failure-handling regression tests
-tests/fixtures/            Recorded real API responses; never used at runtime
-scripts/check-sources.ts  Live endpoint and schema checks
-docs/BUILDERS.md           Publication and badge submission checklist
+http://localhost:4173/
+http://localhost:4173/ipfs/bafybeic5ti5om22inn4cwndj5xerywdhexcyygoxrauqcpkzxjd4okq27e/
+http://localhost:4173/gateway/v2/ipfs/bafybeic5ti5om22inn4cwndj5xerywdhexcyygoxrauqcpkzxjd4okq27e/#game
+http://localhost:4173/ipns/community.example/index.html#sources
 ```
 
-This is an independent community project. It is not an official Squeekchain product. Application code is MIT licensed; upstream schema snapshots retain their upstream provenance.
+A path gateway must serve a directory URL with a trailing slash, or redirect to it. Hash views do not need server routing. Serve over HTTP(S); double-clicking a `file://` HTML file is not the supported module-loading environment.
 
-## Public release verification
+## Wheel Arcade
 
-After deployment, run the anonymous checks with the actual URLs:
+Open **Wheel arcade** in the sidebar or **Play the mini-game** on Overview. Start a 30-second round. Tap **Spin!**, press **Space** or **→** as the moving dot reaches the green arc. The bright center awards a perfect hit; consecutive hits build a bonus. A miss or skipped lap breaks the combo. Only one attempt per lap counts.
+
+Pause/resume and reset are explicit controls. Leaving the tab pauses the game. The final score and best combo are shown when the clock ends. The best score is local to the mounted game view and is lost when that view/page is reopened. Touch targets, narrow layouts and reduced-motion preferences are supported.
+
+**All game points are fictional.** They are not SQK, physical hamster activity, mining, blockchain blocks, rewards, NFTs or a claim on anything. There are no wallet calls, transactions, token approvals or paid actions in this app. Game state is separate from the API reader and never changes analytics.
+
+## Real data and unavailable states
+
+The analytics views read only five documented public GET endpoints at `https://api.squeekchain.com/v1`: status, core, economy/state, settlements and measurement/stats. Credentials are omitted. Official schemas, integer bounds, timestamp formats, additive fields, ETags, request coalescing, backoff and exact SQK amounts are preserved. Validation happens in the browser with precompiled functions, not dynamic schema compilation.
+
+When a source is unavailable, blocked, malformed or unreachable, the affected values remain unknown. There are no runtime demo fixtures or invented blockchain metrics. Recorded test fixtures are used only by tests and are not shipped as a data fallback. The game works independently of API availability after its assets load. Users' ordinary API requests reach Squeekchain from their own networks.
+
+The published deployment record and current API still differ, including Mining v6 versus v9. The source screen keeps the Core/SQK discrepancy visible. This application does not verify the graph independently through RPC or prepare owner transactions. Any reward assistant described in historical documents is a proposal, not part of this release.
+
+There is **no `/api/analytics` endpoint in this static edition**. Earlier Vercel incident and badge documents describe the original application and are not evidence of a static server route or badge award.
+
+## Delivery
+
+Publish the **contents** of `dist/`, with `index.html` at the IPFS directory root. Do not publish `.next/`, dependencies, a repository root, a ZIP file as the website, or only `index.html` without its sibling assets.
+
+For offline delivery archives (Python 3 required):
 
 ```bash
-npm run check:publication -- --site https://YOUR_PUBLIC_HOST --repository YOUR_GITHUB_USERNAME/squeekchain-analytics
+npm run pack:ipfs
 ```
 
-This checks anonymous HTTPS access, schema-valid analytics, error routes, non-exposure of environment/Git files, and public GitHub `main`. It rejects BB share URLs. Browser checks of the five dashboard views and mobile layout remain required. See [the security review](docs/SECURITY.md) for the source/history audit.
+`release/` contains the website ZIP, reproducible-source ZIP, SHA-256 checksums and a per-file build manifest. Packaging makes no network request and performs no upload or publication. `dist/` is ready to hand to an authorized IMD build/review step.
 
-Only the reviewed `esbuild@0.28.2` install script is approved in `package.json`; this removes npm's pending-script warning without approving scripts for unrelated or future package versions.
+See [IMD-HANDOFF.md](docs/IMD-HANDOFF.md) and [the continuation template](handoff/continuation.template.json). The static source branch is public; IPFS hosting has not been updated. No paid continuation, IPFS pin or Genesis project creation is run automatically. The branch's Vercel configuration disables automatic deployment for `ipfs-imd-static`.

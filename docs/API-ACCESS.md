@@ -1,3 +1,5 @@
+> Historical Vercel incident report for the original application on `main`. This static IPFS edition has no `/api/analytics` route and no Vercel runtime logs. It uses direct public browser reads; see the root README for current static behavior.
+
 # Public API access: production incident and supported transport
 
 Investigated on 2026-10-30 against the public Vercel site and the documented Squeekchain API. Dashboard presentation is unchanged.

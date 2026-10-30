@@ -1,7 +1,7 @@
-name: CI
+name: Static IPFS checks
 on:
   push:
-    branches: [main]
+    branches: [ipfs-imd-static]
   pull_request:
 permissions:
   contents: read

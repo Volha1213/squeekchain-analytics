@@ -1,4 +1,3 @@
-"use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Analytics, Range } from "@/lib/types";
 import { getAnalytics } from "@/lib/sources";

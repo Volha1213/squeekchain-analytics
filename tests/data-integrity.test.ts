@@ -56,3 +56,19 @@ test("unavailable values remain unknown, real zero stays zero", () => {
 test("token chart conversion truncates at an explicit presentation boundary", () => {
   assert.equal(chartNumber("11914771138841588939432012", 18), 11914771.138841);
 });
+
+test("standalone validators retain uint256 limits without floating-point coercion", () => {
+  const economy = JSON.parse(readFileSync(new URL("./fixtures/economy.json", import.meta.url), "utf8"));
+  economy.supply.liveSupplyBaseUnits = (2n ** 256n - 1n).toString();
+  assert.equal(validateSource("economy", economy), true);
+  economy.supply.liveSupplyBaseUnits = (2n ** 256n).toString();
+  assert.equal(validateSource("economy", economy), false);
+  economy.supply.liveSupplyBaseUnits = "-1";
+  assert.equal(validateSource("economy", economy), false);
+});
+
+test("standalone validators reject invalid source timestamps", () => {
+  const stats = JSON.parse(readFileSync(new URL("./fixtures/stats.json", import.meta.url), "utf8"));
+  stats.generatedAt = "not-a-date";
+  assert.equal(validateSource("stats", stats), false);
+});

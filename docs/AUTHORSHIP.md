@@ -1,3 +1,5 @@
+> Static IPFS edition: source published on [ipfs-imd-static](https://github.com/Volha1213/squeekchain-analytics/tree/ipfs-imd-static); a new IPFS site version has not been published. The original Vercel/main deployment below is unchanged. The existing IMD site and its accepted worker/review are linked in [IMD-HANDOFF.md](IMD-HANDOFF.md). No new IMD receipt or badge is claimed.
+
 # Authorship and control evidence
 
 Maintainer GitHub account confirmed for this publication session: [Volha1213](https://github.com/Volha1213).
