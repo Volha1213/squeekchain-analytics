@@ -1231,6 +1231,12 @@ function Sources({
                 {reasonText(source.reason)}
                 {source.retryAfter != null &&
                   ` · retry after ${source.retryAfter}s`}
+                {source.upstream?.requestId &&
+                  ` · request ${source.upstream.requestId}`}
+                {source.upstream?.edgeRay &&
+                  ` · edge ${source.upstream.edgeRay}`}
+                {source.upstream?.ownerActionRequired &&
+                  " · source provider action required"}
               </div>
             )}
           </section>

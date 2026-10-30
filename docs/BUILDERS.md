@@ -31,6 +31,10 @@ The same bundled guidance excludes dashboards, explorers, trackers and thin API 
 
 Ask the Squeekchain team whether this analytics application is accepted under the current rules before treating deployment as badge eligibility. If that guidance becomes the active policy, a substantial product feature beyond analytics may be necessary. Do not hide the application's read-only nature or rename it to imply a different product.
 
+## Proposed owner utility
+
+The [SQK Rewards Assistant plan](REWARDS-ASSISTANT-PLAN.md) proposes live ownership and deployment verification, contract reward previews, claim simulations and individually confirmed wallet transactions on Sepolia. It follows the official owner-action guide. This could supply useful contract interaction beyond analytics, but it is a proposal, not a shipped feature or a confirmed badge qualification. The API/deployment identity discrepancy must be resolved before enabling transactions.
+
 ## Publication and evidence checklist
 
 1. Publish the reviewed source to a separate public GitHub repository under the maintainer's account.

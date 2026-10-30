@@ -160,6 +160,16 @@ export type Stats = {
   };
   blocks: { status: string; reason?: string };
 };
+export type UpstreamDiagnostics = {
+  status: number;
+  requestId: string | null;
+  edgeRay: string | null;
+  contentType: string | null;
+  mitigation: string | null;
+  errorCode: number | null;
+  ownerActionRequired: boolean;
+  retryable: boolean | null;
+};
 export type SourceResult<T> = {
   state: "available" | "unavailable" | "error";
   data: T | null;
@@ -168,6 +178,7 @@ export type SourceResult<T> = {
   url: string;
   sourceMode: string | null;
   retryAfter: number | null;
+  upstream?: UpstreamDiagnostics;
 };
 export type Analytics = {
   fetchedAt: string;
