@@ -8,7 +8,7 @@ The application was developed with AI assistance. Its initial local commit uses 
 | --- | --- |
 | Maintainer GitHub account | Connected account confirmed as `Volha1213` |
 | Separate public repository | [Volha1213/squeekchain-analytics](https://github.com/Volha1213/squeekchain-analytics), confirmed public under the connected maintainer account |
-| Production deployment | Not yet deployed; Vercel connection pending |
+| Production deployment | [squeekchain-analytics.vercel.app](https://squeekchain-analytics.vercel.app/), anonymously accessible; browser data and server-origin access are checked separately as described in [API-ACCESS.md](API-ACCESS.md) |
 | Owned domain | Not provided |
 | Squeekchain member identity | Not provided or verified by this application |
 | DNS TXT challenge | Not issued |

@@ -1,6 +1,6 @@
 # English submission draft
 
-**Status: prepared, not submitted.** Publication URLs and domain verification are pending. Confirm current eligibility and whether the public submission flow is open before sending this draft. The application is read-only; do not claim it satisfies rules that exclude read-only dashboards.
+**Status: prepared, not submitted.** [Public site](https://squeekchain-analytics.vercel.app/) and [source](https://github.com/Volha1213/squeekchain-analytics) are published; domain verification is pending. Confirm current eligibility and whether the public submission flow is open before sending this draft. The application is read-only; do not claim it satisfies rules that exclude read-only dashboards. The Rewards Assistant is only a proposal and is not included in the shipped-feature description below.
 
 ## Project name
 

@@ -2,7 +2,7 @@
 
 **Small paws. Real work.** An independent analytics dashboard for the hamster-powered Squeekchain ecosystem on **Ethereum Sepolia**.
 
-Public source: [Volha1213/squeekchain-analytics](https://github.com/Volha1213/squeekchain-analytics). Vercel production deployment is not yet published.
+Public site: [squeekchain-analytics.vercel.app](https://squeekchain-analytics.vercel.app/). Public source: [Volha1213/squeekchain-analytics](https://github.com/Volha1213/squeekchain-analytics).
 
 Built with **Next.js 16, TypeScript, Tailwind CSS 4, and Recharts**. No wallet, API key, database, or paid RPC provider is required.
 
@@ -47,7 +47,7 @@ The production build does not require the upstream API to be online. Data is req
 
 Source: [official API reference](https://docs.squeekchain.com/developers/api/).
 
-| Official endpoint | Used for | Server cache |
+| Official endpoint | Used for | Per-client / per-instance cache |
 | --- | --- | --- |
 | `GET https://api.squeekchain.com/v1/status` | Device readings, freshness, optimistic projection | 5 seconds |
 | `GET https://api.squeekchain.com/v1/core` | Settled SqueekCore state | 15 seconds |
@@ -55,13 +55,17 @@ Source: [official API reference](https://docs.squeekchain.com/developers/api/).
 | `GET https://api.squeekchain.com/v1/economy/state` | SQK supply and staking | 15 seconds |
 | `GET https://api.squeekchain.com/v1/measurement/stats?range=7d` or `30d` | Historical activity and coverage | 5 minutes |
 
-The same-origin `/api/analytics?range=7d` route aggregates these fixed read-only URLs. Ranges `24h`, `7d`, and `30d` are accepted; unknown or repeated query parameters return HTTP 400. Measurement statistics support only `7d`/`30d`; wheel activity therefore offers those two ranges.
+The dashboard reads these fixed official URLs directly in the browser using the API's documented public CORS support, with `credentials: "omit"`. The shared reader applies the same schemas, ETags, cache intervals and availability rules in the browser and on the server. There is no proxy rotation, browser impersonation, challenge solving or fallback to sample data. Users' networks must be able to reach the official API; their IP reaches that service in the normal way.
+
+The optional same-origin `/api/analytics?range=7d` route also aggregates these URLs for server clients. **Vercel server access is currently challenged by Squeekchain's Cloudflare protection**, so that route reports source errors honestly; it is not the dashboard's data transport. Fixing this server access requires the API owner's authorized protection configuration. See [the diagnosis and provider handoff](docs/API-ACCESS.md).
+
+Ranges `24h`, `7d`, and `30d` are accepted; unknown or repeated query parameters on the server route return HTTP 400. Measurement statistics support only `7d`/`30d`; wheel activity therefore offers those two ranges.
 
 ### Integrity rules
 
 - Official JSON Schemas are vendored in `src/lib/schemas/`, retrieved on 2026-10-29. AJV validates schema version, required fields, ranges, timestamp formats, and unsigned integer sizes. Unknown additive properties are accepted as specified by the API's versioning contract. Unknown breaking versions and invalid responses become explicit source errors.
 - HTTP 200 with `status: "unavailable"` is unavailable, never zero. Each source fails independently. A failed dashboard refresh retains the last snapshot with a visible stale-data message. Device readings become stale after the reported freshness threshold, including while refresh is paused.
-- ETags and 304 responses preserve the original data generation time. `Retry-After` is respected; upstream errors back off for at least 15 seconds. Requests are coalesced within a server instance. Network requests time out after 8 seconds.
+- ETags and 304 responses preserve the original data generation time. `Retry-After` is respected; transient errors back off for at least 15 seconds, generic 403 responses for at least 5 minutes. Explicit non-retryable denials and detected protection challenges stop polling that URL for the current reader lifetime. Requests are coalesced within a browser tab or server instance. Network requests time out after 8 seconds. No requests contain credentials or challenge cookies.
 - SQK is parsed as `BigInt`. Full amounts retain 18-decimal precision. Compact values truncate; chart values convert at the presentation boundary and are approximate. Integers exceeding safe chart precision become gaps.
 - Wheel work measures accepted magnet passages, not hashes, energy, or health. Historical distance and live device-day distance are different observations.
 - **Block rate means blocks settled per elapsed hour in an API bucket.** It is not the exact time between physical block completions. Current partial buckets use elapsed time through the source's `generatedAt`; future buckets are gaps.
@@ -73,14 +77,16 @@ The same-origin `/api/analytics?range=7d` route aggregates these fixed read-only
 
 ### Deployment record discrepancy
 
-On **2026-10-29**, the current API reported a different Core and SQK deployment from the [published deployment record](https://docs.squeekchain.com/assets/deployments/sepolia.json):
+On **2026-10-29**, rechecked on **2026-10-30**, the current API reported a different Core and SQK deployment from the [published deployment record](https://docs.squeekchain.com/assets/deployments/sepolia.json):
 
 | Contract | Published record snapshot | Live API at research time |
 | --- | --- | --- |
 | SqueekCore | `0x74665dAecA35A2303e767E76a2FF1FB6F93e119f` | `0x980b4424c007caf7a1f3670b48c8eaef7ebc3d44` |
 | SQK | `0x6872bfa5ccc3e9e440c6c16e5ffdabb8dba4cc76` | `0x5501e1fa81be1c3f49225fa7668da0245d07db60` |
+| Mining proxy | `0x3beE588fC20dE788Bac17d33b41Da7346cb27EC4` | `0xcd46990f8349057335289ef282c276204b6cdc62` |
+| Mining implementation version | `6` | `9` |
 
-The application makes this discrepancy visible. The snapshot is stored with its source URL and retrieval date in `src/lib/deployment-record.json`; it is **not a dynamically refreshed deployment registry**. The app compares current Core/economy chain IDs and Core addresses for internal consistency, but this is **not independent RPC verification**. All figures remain explicitly API-reported. Refresh the snapshot after reviewing an updated official deployment record.
+The application makes the Core/SQK discrepancy visible. The snapshot is stored with its source URL and retrieval date in `src/lib/deployment-record.json`; it is **not a dynamically refreshed deployment registry**. The app compares current Core/economy chain IDs and Core addresses for internal consistency, but this is **not independent RPC verification**. All figures remain explicitly API-reported. The API and record identify different releases; the documented version-6 Mining ABI cannot be assumed compatible with version 9. Refresh the snapshot only after reviewing an updated official deployment record.
 
 ## RPC and SDK research
 
@@ -94,11 +100,11 @@ This application uses the documented public API. It does not guess a Squeekchain
 2. In [Vercel](https://vercel.com/new), import that repository.
 3. Select **Next.js**, set the root to the repository root, and choose **Node.js 24.x**. The checked-in `vercel.json` declares the framework and install/build commands.
 4. Keep the standard commands: install `npm ci`, build `npm run build`, and the default Next.js output directory. No environment variables are required.
-5. Deploy, then open `/api/analytics?range=7d` and the **Data sources** screen to confirm current upstream availability.
+5. Deploy, then open the **Data sources** screen to confirm real browser reads, schema validation and current upstream availability. Separately inspect `/api/analytics?range=7d` for server-origin access; a protection challenge there does not mean browser access is allowed or denied. Validate both independently.
 
 Alternatively, from the project directory, run `npx vercel` and, once you have reviewed the preview, `npx vercel --prod`. These require your Vercel account and authentication.
 
-The route runs on the Node.js runtime with a 30-second maximum duration. Source calls run concurrently. Caches are in-memory and **per instance**; separate serverless instances/cold starts do not share request budgets. Upstream Cloudflare caching still applies. For high traffic, add a shared cache/limiter appropriate to your hosting plan. The application does not require persistent storage for normal use.
+The route runs on the Node.js runtime with a 30-second maximum duration. Source calls run concurrently. Caches are in-memory and **per browser tab / server instance**; separate tabs, serverless instances and cold starts do not share request budgets. Upstream Cloudflare caching still applies. Multiple browser tabs on one network share the API's per-IP limits. The dashboard pauses polling while hidden and honors source backoff. Any future shared server cache needs authorized upstream access first. The application does not require persistent storage for normal use.
 
 ## Publish to GitHub
 
@@ -125,6 +131,8 @@ No GitHub repository, owner identity, or deployed public URL is fabricated in th
 The official [Aura badge listing](https://squeekchain.com/genesis/aura) describes project submission with verified attribution as the Buildooooor requirement. Early Buildooooor depends on being among the first 88 members to verify a project. Building or deploying this code does not itself award either badge.
 
 See [the researched submission requirements](docs/BUILDERS.md), [authorship evidence](docs/AUTHORSHIP.md) and [English submission draft](docs/SUBMISSION.md). At the time of research, Genesis marked Code as not open yet. Bundled, currently inactive submission guidance describes DNS attribution and excludes read-only dashboards. This application is read-only; acceptance must be confirmed by the team. No badge eligibility or award is claimed.
+
+The [SQK Rewards Assistant proposal](docs/REWARDS-ASSISTANT-PLAN.md) describes a useful owner action with verified Sepolia contracts, reward simulations and individual wallet confirmations. It has not been implemented. Resolve deployment identities and validate the complete contract graph before enabling any write.
 
 ## Structure
 

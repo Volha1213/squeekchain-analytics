@@ -39,6 +39,7 @@ export async function readSource<T>(
     try {
       const response = await fetch(url, {
         cache: "no-store",
+        credentials: "omit",
         signal: AbortSignal.timeout(8000),
         headers: {
           Accept: "application/json",
@@ -59,11 +60,12 @@ export async function readSource<T>(
           : Math.max(0, Math.ceil((Date.parse(retry) - Date.now()) / 1000));
       upstream = await upstreamDiagnostics(response);
       if (!response.ok) {
-        console.warn(JSON.stringify({
+        if (typeof window === "undefined") console.warn(JSON.stringify({
           event: "squeekchain_upstream_error", source: key, url, checkedAt,
           ...upstream,
         }));
-        throw new Error(`HTTP ${response.status}${upstream.errorCode != null
+        throw new Error(`HTTP ${response.status}${upstream.mitigation === "challenge"
+          ? " (source protection challenge; provider action required)" : ""}${upstream.errorCode != null
           ? ` (provider code ${upstream.errorCode})` : ""}`);
       }
       const data: unknown = await response.json();
@@ -107,7 +109,7 @@ export async function readSource<T>(
         result,
         // A provider's explicit non-retryable denial must not be polled.
         // A new deployment resets this per-instance cache after owner action.
-        expires: upstream?.retryable === false
+        expires: upstream?.retryable === false || upstream?.mitigation === "challenge"
           ? Infinity
           : Date.now() + Math.max(
               upstream?.status === 403 ? 300_000 : 15_000,
@@ -158,6 +160,7 @@ export async function getAnalytics(range: Range): Promise<Analytics> {
   return {
     fetchedAt: new Date().toISOString(),
     range,
+    transport: typeof window === "undefined" ? "server" : "browser-direct",
     pipeline,
     core,
     economy,

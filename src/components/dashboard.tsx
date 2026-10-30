@@ -1154,14 +1154,14 @@ function Sources({
       title: "WHEELY9000 telemetry",
       purpose:
         "Measured RPM, speed, freshness, provenance and optimistic block projection.",
-      cadence: "5s server cache",
+      cadence: "5s source cache",
       version: 1,
     },
     {
       key: "core",
       title: "SqueekCore",
       purpose: "Settled block height, work, difficulty and round frontier.",
-      cadence: "15s server cache",
+      cadence: "15s source cache",
       version: 1,
     },
     {
@@ -1169,21 +1169,21 @@ function Sources({
       title: "Settlement history",
       purpose:
         "Block batches and per-period settled blocks, work and SQK issuance.",
-      cadence: "60s server cache",
+      cadence: "60s source cache",
       version: 3,
     },
     {
       key: "economy",
       title: "SQK economy",
       purpose: "Live supply, cap, issuance, staking and Squeek counts.",
-      cadence: "15s server cache",
+      cadence: "15s source cache",
       version: 2,
     },
     {
       key: "stats",
       title: "Measurement statistics",
       purpose: "Accepted activity, historical distance, coverage and records.",
-      cadence: "5m server cache",
+      cadence: "5m source cache",
       version: 1,
     },
   ];
@@ -1198,6 +1198,8 @@ function Sources({
             Unavailable values stay unknown. SQK amounts use exact integer
             arithmetic. These are API-reported observations; this application
             does not independently verify Ethereum RPC state.
+            {data?.transport === "browser-direct" &&
+              " Live data is read directly from the official public API in your browser, without credentials."}
           </p>
         </div>
       </section>

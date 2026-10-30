@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Analytics, Range } from "@/lib/types";
+import { getAnalytics } from "@/lib/sources";
 
 export function useAnalytics(range: Range, auto: boolean) {
   const [data, setData] = useState<Analytics | null>(null);
@@ -18,12 +19,10 @@ export function useAnalytics(range: Range, auto: boolean) {
     setLoading(true);
     const requestedRange = current.current;
     try {
-      const response = await fetch(`/api/analytics?range=${requestedRange}`, {
-        signal: AbortSignal.timeout(20_000),
-        cache: "no-store",
-      });
-      if (!response.ok) throw new Error(`Request failed (${response.status})`);
-      const result: Analytics = await response.json();
+      // The public API explicitly supports credential-free browser CORS reads.
+      // Use that documented transport directly, without a challenged server
+      // proxy, hidden fallback, client impersonation or challenge handling.
+      const result = await getAnalytics(requestedRange);
       if (requestedRange === current.current) {
         setData(result);
         setError(null);

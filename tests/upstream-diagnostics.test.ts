@@ -55,3 +55,26 @@ test("explicit non-retryable denial stops polling and remains unknown", async ()
     globalThis.fetch = previous;
   }
 });
+
+test("a protection challenge is reported and never automatically retried", async () => {
+  const previous = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => {
+    calls++;
+    return new Response("<html>challenge</html>", { status: 403, headers: {
+      "content-type": "text/html; charset=UTF-8", "cf-mitigated": "challenge",
+      "cf-ray": "test-ray-IAD",
+    } });
+  };
+  try {
+    const a = await readSource("core", "/core", 0);
+    const b = await readSource("core", "/core", 0);
+    assert.equal(calls, 1);
+    assert.equal(a.data, null);
+    assert.match(a.reason!, /protection challenge/);
+    assert.equal(a.upstream?.mitigation, "challenge");
+    assert.deepEqual(a, b);
+  } finally {
+    globalThis.fetch = previous;
+  }
+});

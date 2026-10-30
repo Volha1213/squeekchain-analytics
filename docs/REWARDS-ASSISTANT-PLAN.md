@@ -12,6 +12,8 @@ The official [owner-action guide](https://docs.squeekchain.com/developers/owner-
 
 The live public API and the [official deployment record](https://docs.squeekchain.com/assets/deployments/sepolia.json) currently name different Core and SQK addresses. Do not copy API identities into transaction destinations or call either deployment authoritative without verification. Obtain a current, officially identified record; retain its provenance and reviewed ABI versions.
 
+The mismatch also includes **Mining version 9 in the API versus version 6 in the published record**. The API release is `stream-game-sepolia-test-20261026-01`, while the record is `squeeks-sepolia-core3-mining6-001`. The claim/checkpoint interfaces below describe the documented version-6 owner-action model; they are conditional design references, not verified interfaces for the API's version-9 graph. Obtain the matching current official ABI, record and owner/reward semantics before implementing those calls. Do not decode or simulate the version-9 contract with the version-6 ABI.
+
 Use the [official quickstart verification](https://docs.squeekchain.com/developers/quickstart/) with viem 2 and an approved Sepolia RPC supporting historical reads. No undocumented Squeekchain RPC is assumed. Check chain ID 11155111, EIP-1967 implementation/admin slots, runtime code hashes, layout digests, implementation versions, ProxyAdmin governance, Core configuration and links between Mining, Core, Token and NFT. Read the graph at one confirmed Ethereum block and retain its hash. Recheck the block hash and graph before preparing a wallet action; fail closed on changed identities or unreadable history. A schema-valid API response is not this verification.
 
 ## Product flow

@@ -184,6 +184,7 @@ export type Analytics = {
   fetchedAt: string;
   range: Range;
   pipeline: SourceResult<Pipeline>;
+  transport?: "server" | "browser-direct";
   core: SourceResult<Core>;
   economy: SourceResult<Economy>;
   settlements: SourceResult<Settlements>;
